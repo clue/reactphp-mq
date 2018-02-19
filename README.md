@@ -37,6 +37,7 @@ much any API that already uses Promises.
   * [Queue](#queue)
     * [Promises](#promises)
     * [Cancellation](#cancellation)
+    * [Timeout](#timeout)
 * [Install](#install)
 * [Tests](#tests)
 * [License](#license)
@@ -214,6 +215,44 @@ $loop->addTimer(2.0, function () use ($promise) {
 
 Similarly, cancelling an operation that is queued and has not yet been started
 will be rejected without ever starting the operation.
+
+#### Timeout
+
+By default, this library does not limit how long a single operation can take,
+so that the resulting promise may stay pending for a long time.
+Many use cases involve some kind of "timeout" logic so that an operation is
+cancelled after a certain threshold is reached.
+
+You can simply use [cancellation](#cancellation) as in the previous chapter or
+you may want to look into using [react/promise-timer](https://github.com/reactphp/promise-timer)
+which helps taking care of this through a simple API.
+
+The resulting code with timeouts applied look something like this:
+
+```php
+use React\Promise\Timer;
+
+$q = new Queue(10, null, function ($uri) use ($browser, $loop) {
+    return Timer\timeout($browser->get($uri), 2.0, $loop);
+});
+
+$promise = $q($uri);
+```
+
+The resulting promise can be consumed as usual and the above code will ensure
+that execution of this operation can not take longer than the given timeout
+(i.e. after it is actually started).
+In particular, note how this differs from applying a timeout to the resulting
+promise. The following code will ensure that the total time for queuing and
+executing this operation can not take longer than the given timeout:
+
+```php
+// usually not recommended
+$promise = Timer\timeout($q($url), 2.0, $loop);
+```
+
+Please refer to [react/promise-timer](https://github.com/reactphp/promise-timer)
+for more details.
 
 ## Install
 
