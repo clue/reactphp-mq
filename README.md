@@ -38,6 +38,7 @@ much any API that already uses Promises.
     * [Promises](#promises)
     * [Cancellation](#cancellation)
     * [Timeout](#timeout)
+    * [Blocking](#blocking)
 * [Install](#install)
 * [Tests](#tests)
 * [License](#license)
@@ -197,6 +198,9 @@ promise which will start the actual operation once another operation is
 completed. This means that this is handled entirely transparently and you do not
 need to worry about this concurrency limit yourself.
 
+If this looks strange to you, you can also use the more traditional
+[blocking API](#blocking).
+
 #### Cancellation
 
 The returned Promise is implemented in such a way that it can be cancelled
@@ -253,6 +257,75 @@ $promise = Timer\timeout($q($url), 2.0, $loop);
 
 Please refer to [react/promise-timer](https://github.com/reactphp/promise-timer)
 for more details.
+
+#### Blocking
+
+As stated above, this library provides you a powerful, async API by default.
+If, however, you want to integrate this into your traditional, blocking
+environment, you may want to look into also using
+[clue/block-react](https://github.com/clue/php-block-react).
+
+The resulting blocking code that awaits a number of concurrent HTTP requests
+could look something like this:
+
+```php
+use Clue\React\Block;
+
+$loop = React\EventLoop\Factory::create();
+$browser = new Clue\React\Buzz\Browser($loop);
+
+$q = new Queue(10, null, function ($url) use ($browser) {
+    return $browser->get($url);
+});
+
+$promises = array(
+    $q('http://example.com/'),
+    $q('http://www.example.org/'),
+    $q('http://example.net/'),
+);
+
+try {
+    $responses = Block\awaitAll($promises, $loop);
+    // responses successfully received
+} catch (Exception $e) {
+    // an error occured while performing the requests
+}
+```
+
+Similarly, you can also wrap this in a function to provide a simple API and hide
+all the async details from the outside:
+
+```php
+/**
+ * Concurrently downloads all the given URIs
+ *
+ * @param string[] $uris       list of URIs to download
+ * @return ResponseInterface[] map with a response object for each URI
+ * @throws Exception if any of the URIs can not be downloaded
+ */
+function download(array $uris)
+{
+    $loop = React\EventLoop\Factory::create();
+    $browser = new Clue\React\Buzz\Browser($loop);
+
+    $q = new Queue(10, null, function ($uri) use ($browser) {
+        return $browser->get($uri);
+    });
+
+    $promises = array();
+    foreach ($uris as $uri) {
+        $promises[$uri] = $q($uri);
+    }
+
+    return Clue\React\Block\awaitAll($promises, $loop);
+}
+```
+
+Please refer to [clue/block-react](https://github.com/clue/php-block-react#readme)
+for more details.
+
+> Keep in mind that returning an array of response messages means that the whole
+  response body has to be kept in memory.
 
 ## Install
 
