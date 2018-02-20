@@ -57,8 +57,8 @@ $urls = file('urls.txt');
 
 // each job should use the browser to GET a certain URL
 // limit number of concurrent jobs here
-$q = new Queue(3, null, function ($url) use ($browser) {
-    return $browser->get($url);
+$q = new Queue(3, null, function ($url) use ($client) {
+    return $client->get($url);
 });
 
 foreach ($urls as $url) {
