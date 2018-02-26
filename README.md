@@ -43,8 +43,6 @@ much any API that already uses Promises.
 * [Tests](#tests)
 * [License](#license)
 
-> Note: This project is in an early alpha stage! Feel free to report any issues you encounter.
-
 ## Quickstart example
 
 Once [installed](#install), you can use the following code to access an
@@ -52,15 +50,15 @@ HTTP webserver and send a large number of HTTP GET requests:
 
 ```php
 $loop = React\EventLoop\Factory::create();
-$client = new Clue\React\Buzz\Browser($loop);
+$browser = new Clue\React\Buzz\Browser($loop);
 
 // load a huge array of URLs to fetch
 $urls = file('urls.txt');
 
 // each job should use the browser to GET a certain URL
 // limit number of concurrent jobs here
-$q = new Queue(3, null, function ($url) use ($client) {
-    return $client->get($url);
+$q = new Queue(3, null, function ($url) use ($browser) {
+    return $browser->get($url);
 });
 
 foreach ($urls as $url) {
@@ -88,12 +86,12 @@ If you add a job to the queue and it still below the limit, it will be executed
 immediately. If you keep adding new jobs to the queue and its concurrency limit
 is reached, it will not start a new operation and instead queue this for future
 execution. Once one of the pending operations complete, it will pick the next
-job from the qeueue and execute this operation.
+job from the queue and execute this operation.
 
 The `new Queue(int $concurrency, ?int $limit, callable $handler)` call
 can be used to create a new queue instance.
 You can create any number of queues, for example when you want to apply
-different limits to different kind of operations.
+different limits to different kinds of operations.
 
 The `$concurrency` parameter sets a new soft limit for the maximum number
 of jobs to handle concurrently. Finding a good concurrency limit depends
@@ -332,11 +330,14 @@ for more details.
 The recommended way to install this library is [through Composer](https://getcomposer.org).
 [New to Composer?](https://getcomposer.org/doc/00-intro.md)
 
+This project follows [SemVer](http://semver.org/).
 This will install the latest supported version:
 
 ```bash
-$ composer require clue/mq-react:dev-master
+$ composer require clue/mq-react:^1.0
 ```
+
+See also the [CHANGELOG](CHANGELOG.md) for details about version upgrades.
 
 This project aims to run on any platform and thus does not require any PHP
 extensions and supports running on legacy PHP 5.3 through current PHP 7+ and
@@ -360,4 +361,13 @@ $ php vendor/bin/phpunit
 
 ## License
 
-MIT
+This project is released under the permissive [MIT license](LICENSE).
+
+I'd like to thank [Bergfreunde GmbH](https://www.bergfreunde.de/), a German
+online retailer for Outdoor Gear & Clothing, for sponsoring the first release! 🎉
+Thanks to sponsors like this, who understand the importance of open source
+development, I can justify spending time and focus on open source development
+instead of traditional paid work.
+
+> Did you know that I offer custom development services and issuing invoices for
+  sponsorships of releases and for contributions? Contact me (@clue) for details.
