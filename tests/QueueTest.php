@@ -211,4 +211,73 @@ class QueueTest extends TestCase
         $second->then(null, $this->expectCallableOnce());
         $this->assertCount(1, $q);
     }
+
+    public function testCancelPendingOperationThatWasPreviousQueuedShouldInvokeItsCancellationHandler()
+    {
+        $q = new Queue(1, null, function ($promise) {
+            return $promise;
+        });
+
+        $deferred = new Deferred();
+        $first = $q($deferred->promise());
+
+        $second = $q(new Promise(function () { }, $this->expectCallableOnce()));
+
+        $deferred->resolve();
+        $second->cancel();
+    }
+
+    public function testCancelPendingOperationThatWasPreviouslyQueuedShouldRejectWithCancellationResult()
+    {
+        $q = new Queue(1, null, function ($promise) {
+            return $promise;
+        });
+
+        $deferred = new Deferred();
+        $first = $q($deferred->promise());
+
+        $second = $q(new Promise(function () { }, function () { throw new \BadMethodCallException(); }));
+
+        $deferred->resolve();
+        $second->cancel();
+
+        $second->then(null, $this->expectCallableOnceWith($this->isInstanceOf('BadMethodCallException')));
+    }
+
+    public function testCancelPendingOperationThatWasPreviouslyQueuedShouldNotRejectIfCancellationHandlerDoesNotReject()
+    {
+        $q = new Queue(1, null, function ($promise) {
+            return $promise;
+        });
+
+        $deferred = new Deferred();
+        $first = $q($deferred->promise());
+
+        $second = $q(new Promise(function () { }, function () {  }));
+
+        $deferred->resolve();
+        $second->cancel();
+
+        $second->then($this->expectCallableNever(), $this->expectCallableNever());
+    }
+
+    public function testCancelNextOperationFromFirstOperationShouldInvokeCancellationHandler()
+    {
+        $q = new Queue(1, null, function () {
+            return new Promise(function () { }, function () {
+                throw new \RuntimeException();
+            });
+        });
+
+        $first = $q();
+        $second = $q();
+
+        $first->then(null, function () use ($second) {
+            $second->cancel();
+        });
+
+        $first->cancel();
+
+        $second->then(null, $this->expectCallableOnce());
+    }
 }
