@@ -3,6 +3,7 @@
 namespace Clue\React\Mq;
 
 use React\Promise;
+use React\Promise\CancellablePromiseInterface;
 use React\Promise\Deferred;
 use React\Promise\PromiseInterface;
 
@@ -134,30 +135,26 @@ class Queue implements \Countable
         end($queue);
         $id = key($queue);
 
-        $deferred = new Deferred(function ($_, $reject) use (&$queue, $id) {
-            // queued promise cancelled before its handler is invoked
-            // remove from queue and reject explicitly
-            unset($queue[$id]);
-            $reject(new \RuntimeException('Cancelled queued job before processing started'));
+        $deferred = new Deferred(function ($_, $reject) use (&$queue, $id, &$deferred) {
+            // forward cancellation to pending operation if it is currently executing
+            if (isset($deferred->pending) && $deferred->pending instanceof CancellablePromiseInterface) {
+                $deferred->pending->cancel();
+            }
+            unset($deferred->pending);
+
+            if (isset($deferred->args)) {
+                // queued promise cancelled before its handler is invoked
+                // remove from queue and reject explicitly
+                unset($queue[$id], $deferred->args);
+                $reject(new \RuntimeException('Cancelled queued job before processing started'));
+            }
         });
 
         // queue job to process if number of pending jobs is below concurrency limit again
+        $deferred->args = func_get_args();
         $queue[$id] = $deferred;
 
-        // once number of pending jobs is below concurrency limit again:
-        // await this situation, invoke handler and await its resolution before invoking next queued job
-        $handler = $this->handler;
-        $args = func_get_args();
-        $that = $this;
-        $pending =& $this->pending;
-        return $deferred->promise()->then(function () use ($handler, $args, $that, &$pending) {
-            ++$pending;
-
-            // invoke handler and await its resolution before invoking next queued job
-            return $that->await(
-                call_user_func_array($handler, $args)
-            );
-        });
+        return $deferred->promise();
     }
 
     public function count()
@@ -193,9 +190,28 @@ class Queue implements \Countable
             return;
         }
 
-        $first = reset($this->queue);
+        /* @var $deferred Deferred */
+        $deferred = reset($this->queue);
         unset($this->queue[key($this->queue)]);
 
-        $first->resolve();
+        // once number of pending jobs is below concurrency limit again:
+        // await this situation, invoke handler and await its resolution before invoking next queued job
+        ++$this->pending;
+
+        $promise = call_user_func_array($this->handler, $deferred->args);
+        $deferred->pending = $promise;
+        unset($deferred->args);
+
+        // invoke handler and await its resolution before invoking next queued job
+        $this->await($promise)->then(
+            function ($result) use ($deferred) {
+                unset($deferred->pending);
+                $deferred->resolve($result);
+            },
+            function ($e) use ($deferred) {
+                unset($deferred->pending);
+                $deferred->reject($e);
+            }
+        );
     }
 }
