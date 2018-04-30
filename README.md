@@ -271,7 +271,7 @@ resolves with the results of all jobs on success.
 $loop = React\EventLoop\Factory::create();
 $browser = new Clue\React\Buzz\Browser($loop);
 
-$promise = Queue:all(3, $urls, function ($url) use ($browser) {
+$promise = Queue::all(3, $urls, function ($url) use ($browser) {
     return $browser->get($url);
 });
 
@@ -296,12 +296,12 @@ jobs. Using a value less than 1 will reject with an
 
 ```php
 // handle up to 10 jobs concurrently
-$promise = Queue:all(10, $jobs, $handler);
+$promise = Queue::all(10, $jobs, $handler);
 ```
 
 ```php
 // handle each job after another without concurrency (waterfall)
-$promise = Queue:all(1, $jobs, $handler);
+$promise = Queue::all(1, $jobs, $handler);
 ```
 
 The `$jobs` parameter must be an array with all jobs to process. Each
@@ -326,7 +326,7 @@ $promise = Queue::all(10, $jobs, function ($url) use ($browser) {
 
 ```php
 // accepts any callable, so PHP's array notation is also supported
-$promise = Queue:all(10, $jobs, array($browser, 'get'));
+$promise = Queue::all(10, $jobs, array($browser, 'get'));
 ```
 
 > Keep in mind that returning an array of response messages means that
@@ -348,7 +348,7 @@ use Clue\React\Block;
 $loop = React\EventLoop\Factory::create();
 $browser = new Clue\React\Buzz\Browser($loop);
 
-$promise = Queue:all(3, $urls, function ($url) use ($browser) {
+$promise = Queue::all(3, $urls, function ($url) use ($browser) {
     return $browser->get($url);
 });
 

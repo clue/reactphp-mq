@@ -41,7 +41,7 @@ class Queue implements \Countable
      * $loop = React\EventLoop\Factory::create();
      * $browser = new Clue\React\Buzz\Browser($loop);
      *
-     * $promise = Queue:all(3, $urls, function ($url) use ($browser) {
+     * $promise = Queue::all(3, $urls, function ($url) use ($browser) {
      *     return $browser->get($url);
      * });
      *
@@ -66,12 +66,12 @@ class Queue implements \Countable
      *
      * ```php
      * // handle up to 10 jobs concurrently
-     * $promise = Queue:all(10, $jobs, $handler);
+     * $promise = Queue::all(10, $jobs, $handler);
      * ```
      *
      * ```php
      * // handle each job after another without concurrency (waterfall)
-     * $promise = Queue:all(1, $jobs, $handler);
+     * $promise = Queue::all(1, $jobs, $handler);
      * ```
      *
      * The `$jobs` parameter must be an array with all jobs to process. Each
@@ -96,7 +96,7 @@ class Queue implements \Countable
      *
      * ```php
      * // accepts any callable, so PHP's array notation is also supported
-     * $promise = Queue:all(10, $jobs, array($browser, 'get'));
+     * $promise = Queue::all(10, $jobs, array($browser, 'get'));
      * ```
      *
      * > Keep in mind that returning an array of response messages means that
