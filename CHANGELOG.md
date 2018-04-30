@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.1.0 (2018-04-30)
+
+*   Feature: Add `all()` helper to await successful fulfillment of all operations
+    (#8 by @clue)
+
+    ```php
+    // new: limit concurrency while awaiting all operations to complete
+    $promise = Queue:all(3, $urls, function ($url) use ($browser) {
+        return $browser->get($url);
+    });
+
+    $promise->then(function (array $responses) {
+        echo 'All ' . count($responses) . ' successful!' . PHP_EOL;
+    });
+    ```
+
+*   Fix: Implement cancellation forwarding for previously queued operations
+    (#7 by @clue)
+
 ## 1.0.0 (2018-02-26)
 
 *   First stable release, following SemVer
