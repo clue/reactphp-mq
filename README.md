@@ -1,4 +1,4 @@
-# clue/mq-react [![Build Status](https://travis-ci.org/clue/php-mq-react.svg?branch=master)](https://travis-ci.org/clue/php-mq-react)
+# clue/reactphp-mq [![Build Status](https://travis-ci.org/clue/reactphp-mq.svg?branch=master)](https://travis-ci.org/clue/reactphp-mq)
 
 Mini Queue, the lightweight in-memory message queue to concurrently do many (but not too many) things at once,
 built on top of [ReactPHP](https://reactphp.org/).
@@ -143,7 +143,7 @@ This library works under the assumption that you want to concurrently handle
 async operations that use a [Promise](https://github.com/reactphp/promise)-based API.
 
 The demonstration purposes, the examples in this documentation use the async
-HTTP client [clue/buzz-react](https://github.com/clue/php-buzz-react), but you
+HTTP client [clue/reactphp-buzz](https://github.com/clue/reactphp-buzz), but you
 may use any Promise-based API with this project. Its API can be used like this:
 
 ```php
@@ -337,7 +337,7 @@ $promise = Queue::all(10, $jobs, array($browser, 'get'));
 As stated above, this library provides you a powerful, async API by default.
 If, however, you want to integrate this into your traditional, blocking
 environment, you may want to look into also using
-[clue/block-react](https://github.com/clue/php-block-react).
+[clue/reactphp-block](https://github.com/clue/reactphp-block).
 
 The resulting blocking code that awaits a number of concurrent HTTP requests
 could look something like this:
@@ -384,7 +384,7 @@ function download(array $uris)
 }
 ```
 
-Please refer to [clue/block-react](https://github.com/clue/php-block-react#readme)
+Please refer to [clue/reactphp-block](https://github.com/clue/reactphp-block#readme)
 for more details.
 
 > Keep in mind that returning an array of response messages means that the whole

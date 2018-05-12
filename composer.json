@@ -2,7 +2,7 @@
     "name": "clue/mq-react",
     "description": "Mini Queue, the lightweight in-memory message queue to concurrently do many (but not too many) things at once, built on top of ReactPHP",
     "keywords": ["Message Queue", "Mini Queue", "job", "message", "worker", "queue", "rate limit", "throttle", "concurrency", "ReactPHP", "async"],
-    "homepage": "https://github.com/clue/php-mq-react",
+    "homepage": "https://github.com/clue/reactphp-mq",
     "license": "MIT",
     "authors": [
         {
