@@ -23,23 +23,21 @@ function download(array $urls)
     $loop = Factory::create();
     $browser = new Browser($loop);
 
-    $queue = new Queue(3, null, function ($url) use ($browser) {
-        return $browser->get($url);
-    });
-
-    $promises = array();
-    foreach ($urls as $url) {
-        $promises[$url] = $queue($url)->then(
-            function (ResponseInterface $response) use ($url) {
+    $urls = array_combine($urls, $urls);
+    $promise = Queue::all(3, $urls, function ($url) use ($browser) {
+        return $browser->get($url)->then(
+            function (ResponseInterface $response) {
+                // return only the body for successful responses
                 return $response->getBody();
             },
-            function (Exception $e) use ($url) {
+            function (Exception $e) {
+                // return null body for failed requests
                 return null;
             }
         );
-    }
+    });
 
-    return Block\awaitAll($promises, $loop);
+    return Block\await($promise, $loop);
 }
 
 $responses = download($urls);
