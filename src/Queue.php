@@ -18,7 +18,7 @@ use React\Promise\PromiseInterface;
  * immediately. If you keep adding new jobs to the queue and its concurrency limit
  * is reached, it will not start a new operation and instead queue this for future
  * execution. Once one of the pending operations complete, it will pick the next
- * job from the qeueue and execute this operation.
+ * job from the queue and execute this operation.
  */
 class Queue implements \Countable
 {
@@ -84,7 +84,7 @@ class Queue implements \Countable
      * The `$handler` parameter must be a valid callable that accepts your job
      * parameters, invokes the appropriate operation and returns a Promise as a
      * placeholder for its future result. If the given argument is not a valid
-     * callable, this method will reject with an `InvalidArgumentExceptionn`
+     * callable, this method will reject with an `InvalidArgumentException`
      * without processing any jobs.
      *
      * ```php
@@ -237,7 +237,7 @@ class Queue implements \Countable
             );
         }
 
-        // we're currently above concurreny limit, make sure we do not exceed maximum queue limit
+        // we're currently above concurrency limit, make sure we do not exceed maximum queue limit
         if ($this->limit !== null && $this->count() >= $this->limit) {
             return Promise\reject(new \OverflowException('Maximum queue limit of ' . $this->limit . ' exceeded'));
         }

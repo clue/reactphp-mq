@@ -314,7 +314,7 @@ empty array without processing any jobs.
 The `$handler` parameter must be a valid callable that accepts your job
 parameters, invokes the appropriate operation and returns a Promise as a
 placeholder for its future result. If the given argument is not a valid
-callable, this method will reject with an `InvalidArgumentExceptionn`
+callable, this method will reject with an `InvalidArgumentException`
 without processing any jobs.
 
 ```php
