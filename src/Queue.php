@@ -144,6 +144,124 @@ class Queue implements \Countable
     }
 
     /**
+     * Concurrently process given jobs through the given `$handler` and resolve
+     * with first resolution value.
+     *
+     * This is a convenience method which uses the `Queue` internally to
+     * schedule all jobs while limiting concurrency to ensure no more than
+     * `$concurrency` jobs ever run at once. It will return a promise which
+     * resolves with the result of the first job on success and will then try
+     * to `cancel()` all outstanding jobs.
+     *
+     * ```php
+     * $loop = React\EventLoop\Factory::create();
+     * $browser = new Clue\React\Buzz\Browser($loop);
+     *
+     * $promise = Queue::any(3, $urls, function ($url) use ($browser) {
+     *     return $browser->get($url);
+     * });
+     *
+     * $promise->then(function (ResponseInterface $response) {
+     *     echo 'First response: ' . $response->getBody() . PHP_EOL;
+     * });
+     * ```
+     *
+     * If all of the jobs fail, it will reject the resulting promise. Similarly,
+     * calling `cancel()` on the resulting promise will try to cancel all
+     * outstanding jobs. See [promises](#promises) and
+     * [cancellation](#cancellation) for details.
+     *
+     * The `$concurrency` parameter sets a new soft limit for the maximum number
+     * of jobs to handle concurrently. Finding a good concurrency limit depends
+     * on your particular use case. It's common to limit concurrency to a rather
+     * small value, as doing more than a dozen of things at once may easily
+     * overwhelm the receiving side. Using a `1` value will ensure that all jobs
+     * are processed one after another, effectively creating a "waterfall" of
+     * jobs. Using a value less than 1 will reject with an
+     * `InvalidArgumentException` without processing any jobs.
+     *
+     * ```php
+     * // handle up to 10 jobs concurrently
+     * $promise = Queue::any(10, $jobs, $handler);
+     * ```
+     *
+     * ```php
+     * // handle each job after another without concurrency (waterfall)
+     * $promise = Queue::any(1, $jobs, $handler);
+     * ```
+     *
+     * The `$jobs` parameter must be an array with all jobs to process. Each
+     * value in this array will be passed to the `$handler` to start one job.
+     * The array keys have no effect, the promise will simply resolve with the
+     * job results of the first successful job as returned by the `$handler`.
+     * If this array is empty, this method will reject without processing any
+     * jobs.
+     *
+     * The `$handler` parameter must be a valid callable that accepts your job
+     * parameters, invokes the appropriate operation and returns a Promise as a
+     * placeholder for its future result. If the given argument is not a valid
+     * callable, this method will reject with an `InvalidArgumentExceptionn`
+     * without processing any jobs.
+     *
+     * ```php
+     * // using a Closure as handler is usually recommended
+     * $promise = Queue::any(10, $jobs, function ($url) use ($browser) {
+     *     return $browser->get($url);
+     * });
+     * ```
+     *
+     * ```php
+     * // accepts any callable, so PHP's array notation is also supported
+     * $promise = Queue::any(10, $jobs, array($browser, 'get'));
+     * ```
+     *
+     * @param int      $concurrency concurrency soft limit
+     * @param array    $jobs
+     * @param callable $handler
+     * @return PromiseInterface Returns a Promise<mixed> which resolves with a single resolution value
+     *     or rejects when all of the operations reject.
+     */
+    public static function any($concurrency, array $jobs, $handler)
+    {
+        // explicitly reject with empty jobs (https://github.com/reactphp/promise/pull/34)
+        if (!$jobs) {
+            return Promise\reject(new \UnderflowException('No jobs given'));
+        }
+
+        try {
+            // limit number of concurrent operations
+            $q = new self($concurrency, null, $handler);
+        } catch (\InvalidArgumentException $e) {
+            // reject if $concurrency or $handler is invalid
+            return Promise\reject($e);
+        }
+
+        // try invoking all operations and automatically queue excessive ones
+        $promises = array_map($q, $jobs);
+
+        return new Promise\Promise(function ($resolve, $reject) use ($promises) {
+            Promise\any($promises)->then(function ($result) use ($promises, $resolve) {
+                // cancel all pending promises if a single result is ready
+                foreach (array_reverse($promises) as $promise) {
+                    if ($promise instanceof CancellablePromiseInterface) {
+                        $promise->cancel();
+                    }
+                }
+
+                // resolve with original resolution value
+                $resolve($result);
+            }, $reject);
+        }, function () use ($promises) {
+            // cancel all pending promises on cancellation
+            foreach (array_reverse($promises) as $promise) {
+                if ($promise instanceof CancellablePromiseInterface) {
+                    $promise->cancel();
+                }
+            }
+        });
+    }
+
+    /**
      * Instantiates a new queue object.
      *
      * You can create any number of queues, for example when you want to apply

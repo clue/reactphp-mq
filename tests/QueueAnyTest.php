@@ -6,48 +6,48 @@ use Clue\React\Mq\Queue;
 use React\Promise\Promise;
 use React\Promise\Deferred;
 
-class QueueAllTest extends TestCase
+class QueueAnyTest extends TestCase
 {
-    public function testAllRejectsIfConcurrencyIsInvalid()
+    public function testAnyRejectsIfConcurrencyIsInvalid()
     {
-        Queue::all(0, array(), function ($arg) {
+        Queue::any(0, array(1), function ($arg) {
             return \React\Promise\resolve($arg);
         })->then(null, $this->expectCallableOnce());
     }
 
-    public function testAllRejectsIfHandlerIsInvalid()
+    public function testAnyRejectsIfHandlerIsInvalid()
     {
-        Queue::all(1, array(), 'foobar')->then(null, $this->expectCallableOnce());
+        Queue::any(1, array(1), 'foobar')->then(null, $this->expectCallableOnce());
     }
 
-    public function testWillResolveWithtEmptyArrayWithoutInvokingHandlerWhenJobsAreEmpty()
+    public function testAnyWillRejectWithoutInvokingHandlerWhenJobsAreEmpty()
     {
-        $promise = Queue::all(1, array(), $this->expectCallableNever());
+        $promise = Queue::any(1, array(), $this->expectCallableNever());
 
-        $promise->then($this->expectCallableOnceWith(array()));
+        $promise->then(null, $this->expectCallableOnce());
     }
 
     public function testWillResolveWithSingleValueIfHandlerResolves()
     {
-        $promise = Queue::all(1, array(1), function ($arg) {
+        $promise = Queue::any(1, array(1), function ($arg) {
             return \React\Promise\resolve($arg);
         });
 
-        $promise->then($this->expectCallableOnceWith(array(1)));
+        $promise->then($this->expectCallableOnceWith(1));
     }
 
-    public function testWillResolveWithAllValuesIfHandlerResolves()
+    public function testWillResolveWithFirstValueIfAllHandlersResolve()
     {
-        $promise = Queue::all(1, array(1, 2), function ($arg) {
+        $promise = Queue::any(1, array(1, 2, 3), function ($arg) {
             return \React\Promise\resolve($arg);
         });
 
-        $promise->then($this->expectCallableOnceWith(array(1, 2)));
+        $promise->then($this->expectCallableOnceWith(1));
     }
 
-    public function testWillRejectIfSingleRejects()
+    public function testWillRejectIfSingleReject()
     {
-        $promise = Queue::all(1, array(1), function () {
+        $promise = Queue::any(1, array(1), function () {
             return \React\Promise\reject(new \RuntimeException());
         });
 
@@ -56,7 +56,7 @@ class QueueAllTest extends TestCase
 
     public function testWillRejectIfMoreHandlersReject()
     {
-        $promise = Queue::all(1, array(1, 2), function () {
+        $promise = Queue::any(1, array(1, 2), function () {
             return \React\Promise\reject(new \RuntimeException());
         });
 
@@ -67,43 +67,43 @@ class QueueAllTest extends TestCase
     {
         $pending = new Promise(function () { }, $this->expectCallableOnce());
 
-        $promise = Queue::all(1, array(1), function () use ($pending) {
+        $promise = Queue::any(1, array(1), function () use ($pending) {
             return $pending;
         });
 
         $promise->cancel();
     }
 
-    public function testPendingOperationWillBeStartedAndCancelledIfOneOperationRejects()
+    public function testPendingOperationWillBeStartedAndCancelledIfFirstOperationResolves()
     {
         // second operation will only be started to be cancelled immediately
         $first = new Deferred();
         $second = new Promise(function () { }, $this->expectCallableOnce());
 
-        $promise = Queue::all(1, array($first->promise(), $second), function ($promise) {
+        $promise = Queue::any(1, array($first->promise(), $second), function ($promise) {
             return $promise;
         });
 
-        $first->reject(new \RuntimeException());
+        $first->resolve(1);
 
-        $promise->then(null, $this->expectCallableOnce());
+        $promise->then($this->expectCallableOnceWith(1));
     }
 
-    public function testPendingOperationWillBeCancelledIfOneOperationRejects()
+    public function testPendingOperationWillBeCancelledIfFirstOperationResolves()
     {
         $first = new Deferred();
         $second = new Promise(function () { }, $this->expectCallableOnce());
 
-        $promise = Queue::all(2, array($first->promise(), $second), function ($promise) {
+        $promise = Queue::any(2, array($first->promise(), $second), function ($promise) {
             return $promise;
         });
 
-        $first->reject(new \RuntimeException());
+        $first->resolve(1);
 
-        $promise->then(null, $this->expectCallableOnce());
+        $promise->then($this->expectCallableOnceWith(1));
     }
 
-    public function testQueuedOperationsWillStartAndCancelOneIfOneOperationRejects()
+    public function testQueuedOperationsWillStartAndCancelOneIfOneOperationResolves()
     {
         $first = new Deferred();
         $second = new Promise(function () { }, function () {
@@ -113,12 +113,12 @@ class QueueAllTest extends TestCase
         $fourth = new Promise(function () { }, $this->expectCallableNever());
 
         $started = 0;
-        $promise = Queue::all(2, array($first->promise(), $second, $third, $fourth), function ($promise) use (&$started) {
+        $promise = Queue::any(2, array($first->promise(), $second, $third, $fourth), function ($promise) use (&$started) {
             ++$started;
             return $promise;
         });
 
-        $first->reject(new \RuntimeException());
+        $first->resolve(1);
 
         $this->assertEquals(3, $started);
     }
