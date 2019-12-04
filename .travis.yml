@@ -10,7 +10,6 @@ php:
   - 7.2
   - 7.3
   - 7.4
-  - hhvm # ignore errors, see below
 
 # lock distro so new future defaults will not break the build
 dist: xenial
@@ -23,8 +22,6 @@ matrix:
       dist: trusty
     - php: 5.5
       dist: trusty
-  allow_failures:
-    - php: hhvm
 
 sudo: false
 
