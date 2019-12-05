@@ -19,16 +19,16 @@ You can use this to throttle multiple HTTP requests, database queries or pretty
 much any API that already uses Promises.
 
 * **Async execution of operations** -
-  Process any number of async operations choose how many should be handled
+  Process any number of async operations and choose how many should be handled
   concurrently and how many operations can be queued in-memory. Process their
   results as soon as responses come in.
-  The Promise-based design provides a *sane* interface to working with out of bound results.
+  The Promise-based design provides a *sane* interface to working with out of order results.
 * **Lightweight, SOLID design** -
-  Provides a thin abstraction that is [*just good enough*](http://en.wikipedia.org/wiki/Principle_of_good_enough)
+  Provides a thin abstraction that is [*just good enough*](https://en.wikipedia.org/wiki/Principle_of_good_enough)
   and does not get in your way.
   Builds on top of well-tested components and well-established concepts instead of reinventing the wheel.
 * **Good test coverage** -
-  Comes with an automated tests suite and is regularly tested in the *real world*
+  Comes with an automated tests suite and is regularly tested in the *real world*.
 
 **Table of contents**
 
@@ -470,11 +470,11 @@ for more details.
 The recommended way to install this library is [through Composer](https://getcomposer.org).
 [New to Composer?](https://getcomposer.org/doc/00-intro.md)
 
-This project follows [SemVer](http://semver.org/).
+This project follows [SemVer](https://semver.org/).
 This will install the latest supported version:
 
 ```bash
-$ composer require clue/mq-react:^1.1
+$ composer require clue/mq-react:^1.2
 ```
 
 See also the [CHANGELOG](CHANGELOG.md) for details about version upgrades.
