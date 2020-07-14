@@ -39,7 +39,7 @@ class Queue implements \Countable
      *
      * ```php
      * $loop = React\EventLoop\Factory::create();
-     * $browser = new Clue\React\Buzz\Browser($loop);
+     * $browser = new React\Http\Browser($loop);
      *
      * $promise = Queue::all(3, $urls, function ($url) use ($browser) {
      *     return $browser->get($url);
@@ -155,7 +155,7 @@ class Queue implements \Countable
      *
      * ```php
      * $loop = React\EventLoop\Factory::create();
-     * $browser = new Clue\React\Buzz\Browser($loop);
+     * $browser = new React\Http\Browser($loop);
      *
      * $promise = Queue::any(3, $urls, function ($url) use ($browser) {
      *     return $browser->get($url);
