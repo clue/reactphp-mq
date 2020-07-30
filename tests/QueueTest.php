@@ -24,27 +24,21 @@ class QueueTest extends TestCase
         $q = new Queue(1, null, function () { });
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function testCtorThrowsIfNotCallable()
     {
+        $this->setExpectedException('InvalidArgumentException');
         new Queue(1, 2, null);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function testCtorThrowsIfConcurrencyTooLow()
     {
+        $this->setExpectedException('InvalidArgumentException');
         new Queue(0, 2, function () { });
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function testCtorThrowsIfConcurrencyAboveLiit()
     {
+        $this->setExpectedException('InvalidArgumentException');
         new Queue(3, 2, function () { });
     }
 
