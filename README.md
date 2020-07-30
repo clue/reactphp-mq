@@ -52,7 +52,7 @@ HTTP webserver and send a large number of HTTP GET requests:
 
 ```php
 $loop = React\EventLoop\Factory::create();
-$browser = new Clue\React\Buzz\Browser($loop);
+$browser = new React\Http\Browser($loop);
 
 // load a huge array of URLs to fetch
 $urls = file('urls.txt');
@@ -143,13 +143,13 @@ $q = new Queue(10, null, array($browser, 'get'));
 This library works under the assumption that you want to concurrently handle
 async operations that use a [Promise](https://github.com/reactphp/promise)-based API.
 
-The demonstration purposes, the examples in this documentation use the async
-HTTP client [clue/reactphp-buzz](https://github.com/clue/reactphp-buzz), but you
+The demonstration purposes, the examples in this documentation use 
+[ReactPHP's async HTTP client](https://github.com/reactphp/http#client-usage), but you
 may use any Promise-based API with this project. Its API can be used like this:
 
 ```php
 $loop = React\EventLoop\Factory::create();
-$browser = new Clue\React\Buzz\Browser($loop);
+$browser = new React\Http\Browser($loop);
 
 $promise = $browser->get($url);
 ```
@@ -159,7 +159,7 @@ like this:
 
 ```php
 $loop = React\EventLoop\Factory::create();
-$browser = new Clue\React\Buzz\Browser($loop);
+$browser = new React\Http\Browser($loop);
 
 $q = new Queue(10, null, function ($url) use ($browser) {
     return $browser->get($url);
@@ -270,7 +270,7 @@ resolves with the results of all jobs on success.
 
 ```php
 $loop = React\EventLoop\Factory::create();
-$browser = new Clue\React\Buzz\Browser($loop);
+$browser = new React\Http\Browser($loop);
 
 $promise = Queue::all(3, $urls, function ($url) use ($browser) {
     return $browser->get($url);
@@ -347,7 +347,7 @@ to `cancel()` all outstanding jobs.
 
 ```php
 $loop = React\EventLoop\Factory::create();
-$browser = new Clue\React\Buzz\Browser($loop);
+$browser = new React\Http\Browser($loop);
 
 $promise = Queue::any(3, $urls, function ($url) use ($browser) {
     return $browser->get($url);
@@ -421,7 +421,7 @@ could look something like this:
 use Clue\React\Block;
 
 $loop = React\EventLoop\Factory::create();
-$browser = new Clue\React\Buzz\Browser($loop);
+$browser = new React\Http\Browser($loop);
 
 $promise = Queue::all(3, $urls, function ($url) use ($browser) {
     return $browser->get($url);
@@ -449,7 +449,7 @@ all the async details from the outside:
 function download(array $uris)
 {
     $loop = React\EventLoop\Factory::create();
-    $browser = new Clue\React\Buzz\Browser($loop);
+    $browser = new React\Http\Browser($loop);
 
     $promise = Queue::all(3, $uris, function ($uri) use ($browser) {
         return $browser->get($uri);

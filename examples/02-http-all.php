@@ -1,9 +1,9 @@
 <?php
 
-use Clue\React\Buzz\Browser;
 use Clue\React\Mq\Queue;
 use Psr\Http\Message\ResponseInterface;
 use React\EventLoop\Factory;
+use React\Http\Browser;
 
 require __DIR__ . '/../vendor/autoload.php';
 
