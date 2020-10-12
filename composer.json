@@ -22,7 +22,7 @@
     },
     "require-dev": {
         "clue/block-react": "^1.0",
-        "phpunit/phpunit": "^9.0 || ^5.7 || ^4.8.35",
+        "phpunit/phpunit": "^9.3 || ^5.7 || ^4.8.35",
         "react/event-loop": "^1.0 || ^0.5",
         "react/http": "^1.0"
     }
