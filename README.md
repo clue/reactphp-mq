@@ -32,6 +32,7 @@ much any API that already uses Promises.
 
 **Table of contents**
 
+* [Support us](#support-us)
 * [Quickstart example](#quickstart-example)
 * [Usage](#usage)
   * [Queue](#queue)
@@ -44,6 +45,16 @@ much any API that already uses Promises.
 * [Install](#install)
 * [Tests](#tests)
 * [License](#license)
+
+## Support us
+
+We invest a lot of time developing, maintaining and updating our awesome
+open-source projects. You can help us sustain this high-quality of our work by
+[becoming a sponsor on GitHub](https://github.com/sponsors/clue). Sponsors get
+numerous benefits in return, see our [sponsoring page](https://github.com/sponsors/clue)
+for details.
+
+Let's take these projects to the next level together! 🚀
 
 ## Quickstart example
 
@@ -336,8 +347,8 @@ $promise = Queue::all(10, $jobs, array($browser, 'get'));
 #### any()
 
 The static `any(int $concurrency, array $jobs, callable $handler): PromiseInterface<mixed>` method can be used to
-concurrently process given jobs through the given `$handler` and resolve
-with first resolution value.
+concurrently process the given jobs through the given `$handler` and
+resolve with first resolution value.
 
 This is a convenience method which uses the `Queue` internally to
 schedule all jobs while limiting concurrency to ensure no more than
@@ -474,7 +485,7 @@ This project follows [SemVer](https://semver.org/).
 This will install the latest supported version:
 
 ```bash
-$ composer require clue/mq-react:^1.2
+$ composer require clue/mq-react:^1.3
 ```
 
 See also the [CHANGELOG](CHANGELOG.md) for details about version upgrades.

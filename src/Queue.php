@@ -144,8 +144,8 @@ class Queue implements \Countable
     }
 
     /**
-     * Concurrently process given jobs through the given `$handler` and resolve
-     * with first resolution value.
+     * Concurrently process the given jobs through the given `$handler` and
+     * resolve with first resolution value.
      *
      * This is a convenience method which uses the `Queue` internally to
      * schedule all jobs while limiting concurrency to ensure no more than

@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.3.0 (2020-10-16)
+
+*   Enhanced documentation for ReactPHP's new HTTP client and
+    add support / sponsorship info.
+    (#21 and #24 by @clue)
+
+*   Improve test suite and add `.gitattributes` to exclude dev files from exports.
+    Prepare PHP 8 support, update to PHPUnit 9 and simplify test matrix.
+    (#22, #23 and #25 by @SimonFrings)
+
 ## 1.2.0 (2019-12-05)
 
 *   Feature: Add `any()` helper to await first successful fulfillment of operations.
