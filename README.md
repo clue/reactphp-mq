@@ -1,6 +1,7 @@
 # clue/reactphp-mq
 
 [![CI status](https://github.com/clue/reactphp-mq/workflows/CI/badge.svg)](https://github.com/clue/reactphp-mq/actions)
+[![installs on Packagist](https://img.shields.io/packagist/dt/clue/mq-react?color=blue&label=installs%20on%20Packagist)](https://packagist.org/packages/clue/mq-react)
 
 Mini Queue, the lightweight in-memory message queue to concurrently do many (but not too many) things at once,
 built on top of [ReactPHP](https://reactphp.org/).
