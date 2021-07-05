@@ -1,4 +1,6 @@
-# clue/reactphp-mq [![Build Status](https://travis-ci.org/clue/reactphp-mq.svg?branch=master)](https://travis-ci.org/clue/reactphp-mq)
+# clue/reactphp-mq
+
+[![CI status](https://github.com/clue/reactphp-mq/workflows/CI/badge.svg)](https://github.com/clue/reactphp-mq/actions)
 
 Mini Queue, the lightweight in-memory message queue to concurrently do many (but not too many) things at once,
 built on top of [ReactPHP](https://reactphp.org/).
@@ -491,7 +493,7 @@ $ composer require clue/mq-react:^1.3
 See also the [CHANGELOG](CHANGELOG.md) for details about version upgrades.
 
 This project aims to run on any platform and thus does not require any PHP
-extensions and supports running on legacy PHP 5.3 through current PHP 7+.
+extensions and supports running on legacy PHP 5.3 through current PHP 8+.
 It's *highly recommended to use PHP 7+* for this project.
 
 ## Tests
