@@ -65,8 +65,7 @@ Once [installed](#install), you can use the following code to access an
 HTTP webserver and send a large number of HTTP GET requests:
 
 ```php
-$loop = React\EventLoop\Factory::create();
-$browser = new React\Http\Browser($loop);
+$browser = new React\Http\Browser();
 
 // load a huge array of URLs to fetch
 $urls = file('urls.txt');
@@ -83,7 +82,6 @@ foreach ($urls as $url) {
     });
 }
 
-$loop->run();
 ```
 
 See also the [examples](examples).
@@ -162,8 +160,7 @@ The demonstration purposes, the examples in this documentation use
 may use any Promise-based API with this project. Its API can be used like this:
 
 ```php
-$loop = React\EventLoop\Factory::create();
-$browser = new React\Http\Browser($loop);
+$browser = new React\Http\Browser();
 
 $promise = $browser->get($url);
 ```
@@ -172,8 +169,7 @@ If you wrap this in a `Queue` instance as given above, this code will look
 like this:
 
 ```php
-$loop = React\EventLoop\Factory::create();
-$browser = new React\Http\Browser($loop);
+$browser = new React\Http\Browser();
 
 $q = new Queue(10, null, function ($url) use ($browser) {
     return $browser->get($url);
@@ -226,7 +222,7 @@ underlying resources.
 ```php
 $promise = $q($url);
 
-$loop->addTimer(2.0, function () use ($promise) {
+Loop::addTimer(2.0, function () use ($promise) {
     $promise->cancel();
 });
 ```
@@ -250,8 +246,8 @@ The resulting code with timeouts applied look something like this:
 ```php
 use React\Promise\Timer;
 
-$q = new Queue(10, null, function ($uri) use ($browser, $loop) {
-    return Timer\timeout($browser->get($uri), 2.0, $loop);
+$q = new Queue(10, null, function ($uri) use ($browser) {
+    return Timer\timeout($browser->get($uri), 2.0);
 });
 
 $promise = $q($uri);
@@ -266,7 +262,7 @@ executing this operation can not take longer than the given timeout:
 
 ```php
 // usually not recommended
-$promise = Timer\timeout($q($url), 2.0, $loop);
+$promise = Timer\timeout($q($url), 2.0);
 ```
 
 Please refer to [react/promise-timer](https://github.com/reactphp/promise-timer)
@@ -283,8 +279,7 @@ schedule all jobs while limiting concurrency to ensure no more than
 resolves with the results of all jobs on success.
 
 ```php
-$loop = React\EventLoop\Factory::create();
-$browser = new React\Http\Browser($loop);
+$browser = new React\Http\Browser();
 
 $promise = Queue::all(3, $urls, function ($url) use ($browser) {
     return $browser->get($url);
@@ -360,8 +355,7 @@ resolves with the result of the first job on success and will then try
 to `cancel()` all outstanding jobs.
 
 ```php
-$loop = React\EventLoop\Factory::create();
-$browser = new React\Http\Browser($loop);
+$browser = new React\Http\Browser();
 
 $promise = Queue::any(3, $urls, function ($url) use ($browser) {
     return $browser->get($url);
@@ -434,8 +428,7 @@ could look something like this:
 ```php
 use Clue\React\Block;
 
-$loop = React\EventLoop\Factory::create();
-$browser = new React\Http\Browser($loop);
+$browser = new React\Http\Browser();
 
 $promise = Queue::all(3, $urls, function ($url) use ($browser) {
     return $browser->get($url);
@@ -462,8 +455,7 @@ all the async details from the outside:
  */
 function download(array $uris)
 {
-    $loop = React\EventLoop\Factory::create();
-    $browser = new React\Http\Browser($loop);
+    $browser = new React\Http\Browser();
 
     $promise = Queue::all(3, $uris, function ($uri) use ($browser) {
         return $browser->get($uri);
