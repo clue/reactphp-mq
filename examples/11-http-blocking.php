@@ -20,8 +20,7 @@ $urls = array(
 
 function download(array $urls)
 {
-    $loop = Factory::create();
-    $browser = new Browser($loop);
+    $browser = new Browser();
 
     $urls = array_combine($urls, $urls);
     $promise = Queue::all(3, $urls, function ($url) use ($browser) {

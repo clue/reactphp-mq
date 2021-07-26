@@ -17,8 +17,7 @@ $urls = array(
     //'http://httpbin.org/delay/2',
 );
 
-$loop = Factory::create();
-$browser = new Browser($loop);
+$browser = new Browser();
 
 // each job should use the browser to GET a certain URL
 // limit number of concurrent jobs here to avoid using excessive network resources
@@ -39,4 +38,3 @@ $promise->then(
     }
 );
 
-$loop->run();

@@ -38,8 +38,7 @@ class Queue implements \Countable
      * resolves with the results of all jobs on success.
      *
      * ```php
-     * $loop = React\EventLoop\Factory::create();
-     * $browser = new React\Http\Browser($loop);
+     * $browser = new React\Http\Browser();
      *
      * $promise = Queue::all(3, $urls, function ($url) use ($browser) {
      *     return $browser->get($url);
@@ -154,8 +153,7 @@ class Queue implements \Countable
      * to `cancel()` all outstanding jobs.
      *
      * ```php
-     * $loop = React\EventLoop\Factory::create();
-     * $browser = new React\Http\Browser($loop);
+     * $browser = new React\Http\Browser();
      *
      * $promise = Queue::any(3, $urls, function ($url) use ($browser) {
      *     return $browser->get($url);
