@@ -1,10 +1,7 @@
 <?php
 
 use Clue\React\Block;
-use Clue\React\Mq\Queue;
-use Psr\Http\Message\ResponseInterface;
-use React\EventLoop\Factory;
-use React\Http\Browser;
+use React\EventLoop\Loop;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -20,12 +17,12 @@ $urls = array(
 
 function download(array $urls)
 {
-    $browser = new Browser();
+    $browser = new React\Http\Browser();
 
     $urls = array_combine($urls, $urls);
-    $promise = Queue::all(3, $urls, function ($url) use ($browser) {
+    $promise = Clue\React\Mq\Queue::all(3, $urls, function ($url) use ($browser) {
         return $browser->get($url)->then(
-            function (ResponseInterface $response) {
+            function (Psr\Http\Message\ResponseInterface $response) {
                 // return only the body for successful responses
                 return $response->getBody();
             },
@@ -36,7 +33,7 @@ function download(array $urls)
         );
     });
 
-    return Block\await($promise, $loop);
+    return Block\await($promise, Loop::get());
 }
 
 $responses = download($urls);
