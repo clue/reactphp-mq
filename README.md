@@ -65,6 +65,10 @@ Once [installed](#install), you can use the following code to access an
 HTTP webserver and send a large number of HTTP GET requests:
 
 ```php
+<?php
+
+require __DIR__ . '/vendor/autoload.php';
+
 $browser = new React\Http\Browser();
 
 // load a huge array of URLs to fetch
@@ -72,12 +76,12 @@ $urls = file('urls.txt');
 
 // each job should use the browser to GET a certain URL
 // limit number of concurrent jobs here
-$q = new Queue(3, null, function ($url) use ($browser) {
+$q = new Clue\React\Mq\Queue(3, null, function ($url) use ($browser) {
     return $browser->get($url);
 });
 
 foreach ($urls as $url) {
-    $q($url)->then(function (ResponseInterface $response) use ($url) {
+    $q($url)->then(function (Psr\Http\Message\ResponseInterface $response) use ($url) {
         echo $url . ': ' . $response->getBody()->getSize() . ' bytes' . PHP_EOL;
     });
 }
@@ -473,7 +477,7 @@ for more details.
 
 ## Install
 
-The recommended way to install this library is [through Composer](https://getcomposer.org).
+The recommended way to install this library is [through Composer](https://getcomposer.org/).
 [New to Composer?](https://getcomposer.org/doc/00-intro.md)
 
 This project follows [SemVer](https://semver.org/).
@@ -487,12 +491,12 @@ See also the [CHANGELOG](CHANGELOG.md) for details about version upgrades.
 
 This project aims to run on any platform and thus does not require any PHP
 extensions and supports running on legacy PHP 5.3 through current PHP 8+.
-It's *highly recommended to use PHP 7+* for this project.
+It's highly recommended to use the latest supported PHP version for this project.
 
 ## Tests
 
 To run the test suite, you first need to clone this repo and then install all
-dependencies [through Composer](https://getcomposer.org):
+dependencies [through Composer](https://getcomposer.org/):
 
 ```bash
 $ composer install
@@ -501,7 +505,7 @@ $ composer install
 To run the test suite, go to the project root and run:
 
 ```bash
-$ php vendor/bin/phpunit
+$ vendor/bin/phpunit
 ```
 
 ## License
