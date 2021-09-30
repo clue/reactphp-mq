@@ -1,10 +1,5 @@
 <?php
 
-use Clue\React\Mq\Queue;
-use Psr\Http\Message\ResponseInterface;
-use React\EventLoop\Factory;
-use React\Http\Browser;
-
 require __DIR__ . '/../vendor/autoload.php';
 
 // list of all URLs you want to download
@@ -17,17 +12,17 @@ $urls = array(
     'http://www.google.com/',
 );
 
-$browser = new Browser();
+$browser = new React\Http\Browser();
 
 // each job should use the browser to GET a certain URL
 // limit number of concurrent jobs here to avoid using excessive network resources
-$queue = new Queue(3, null, function ($url) use ($browser) {
+$queue = new Clue\React\Mq\Queue(3, null, function ($url) use ($browser) {
     return $browser->get($url);
 });
 
 foreach ($urls as $url) {
     $queue($url)->then(
-        function (ResponseInterface $response) use ($url) {
+        function (Psr\Http\Message\ResponseInterface $response) use ($url) {
             echo $url . ' has ' . $response->getBody()->getSize() . ' bytes' . PHP_EOL;
         },
         function (Exception $e) use ($url) {

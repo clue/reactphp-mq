@@ -1,10 +1,5 @@
 <?php
 
-use Clue\React\Mq\Queue;
-use Psr\Http\Message\ResponseInterface;
-use React\EventLoop\Factory;
-use React\Http\Browser;
-
 require __DIR__ . '/../vendor/autoload.php';
 
 // list of all URLs you want to try
@@ -18,13 +13,13 @@ $urls = array(
     'http://www.google.com/invalid',
 );
 
-$browser = new Browser();
+$browser = new React\Http\Browser();
 
 // each job should use the browser to GET a certain URL
 // limit number of concurrent jobs here to avoid using excessive network resources
-$promise = Queue::any(2, $urls, function ($url) use ($browser) {
+$promise = Clue\React\Mq\Queue::any(2, $urls, function ($url) use ($browser) {
     return $browser->get($url)->then(
-        function (ResponseInterface $response) use ($url) {
+        function (Psr\Http\Message\ResponseInterface $response) use ($url) {
             // return only the URL for the first successful response
             return $url;
         }
