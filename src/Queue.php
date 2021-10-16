@@ -387,6 +387,7 @@ class Queue implements \Countable
         return $deferred->promise();
     }
 
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return $this->pending + count($this->queue);
