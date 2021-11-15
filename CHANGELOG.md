@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.4.0 (2021-11-15)
+
+*   Feature: Support PHP 8.1, avoid deprecation warning concerning `\Countable::count(...)` return type.
+    (#32 by @bartvanhoutte)
+
+*   Improve documentation and simplify examples by updating to new [default loop](https://reactphp.org/event-loop/#loop).
+    (#27 and #29 by @PaulRotmann and #30 by @SimonFrings)
+
+*   Improve test suite to use GitHub actions for continuous integration (CI).
+    (#28 by @SimonFrings)
+
 ## 1.3.0 (2020-10-16)
 
 *   Enhanced documentation for ReactPHP's new HTTP client and
