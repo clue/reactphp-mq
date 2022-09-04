@@ -18,12 +18,12 @@
     },
     "require": {
         "php": ">=5.3",
-        "react/promise": "^2.2.1 || ^1.2.1"
+        "react/promise": "^3@dev || ^2.2.1 || ^1.2.1"
     },
     "require-dev": {
-        "clue/block-react": "^1.0",
+        "clue/block-react": "^1.5",
         "phpunit/phpunit": "^9.3 || ^5.7 || ^4.8.35",
         "react/event-loop": "^1.2",
-        "react/http": "^1.5"
+        "react/http": "^1.8@dev"
     }
 }

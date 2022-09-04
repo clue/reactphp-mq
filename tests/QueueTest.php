@@ -217,7 +217,7 @@ class QueueTest extends TestCase
 
         $second = $q(new Promise(function () { }, $this->expectCallableOnce()));
 
-        $deferred->resolve();
+        $deferred->resolve(null);
         $second->cancel();
     }
 
@@ -232,7 +232,7 @@ class QueueTest extends TestCase
 
         $second = $q(new Promise(function () { }, function () { throw new \BadMethodCallException(); }));
 
-        $deferred->resolve();
+        $deferred->resolve(null);
         $second->cancel();
 
         $second->then(null, $this->expectCallableOnceWith($this->isInstanceOf('BadMethodCallException')));
@@ -249,7 +249,7 @@ class QueueTest extends TestCase
 
         $second = $q(new Promise(function () { }, function () {  }));
 
-        $deferred->resolve();
+        $deferred->resolve(null);
         $second->cancel();
 
         $second->then($this->expectCallableNever(), $this->expectCallableNever());
