@@ -3,7 +3,6 @@
 namespace Clue\React\Mq;
 
 use React\Promise;
-use React\Promise\CancellablePromiseInterface;
 use React\Promise\Deferred;
 use React\Promise\PromiseInterface;
 
@@ -124,7 +123,7 @@ class Queue implements \Countable
             Promise\all($promises)->then($resolve, function ($e) use ($promises, $reject) {
                 // cancel all pending promises if a single promise fails
                 foreach (array_reverse($promises) as $promise) {
-                    if ($promise instanceof CancellablePromiseInterface) {
+                    if ($promise instanceof PromiseInterface && \method_exists($promise, 'cancel')) {
                         $promise->cancel();
                     }
                 }
@@ -135,7 +134,7 @@ class Queue implements \Countable
         }, function () use ($promises) {
             // cancel all pending promises on cancellation
             foreach (array_reverse($promises) as $promise) {
-                if ($promise instanceof CancellablePromiseInterface) {
+                if ($promise instanceof PromiseInterface && \method_exists($promise, 'cancel')) {
                     $promise->cancel();
                 }
             }
@@ -241,7 +240,7 @@ class Queue implements \Countable
             Promise\any($promises)->then(function ($result) use ($promises, $resolve) {
                 // cancel all pending promises if a single result is ready
                 foreach (array_reverse($promises) as $promise) {
-                    if ($promise instanceof CancellablePromiseInterface) {
+                    if ($promise instanceof PromiseInterface && \method_exists($promise, 'cancel')) {
                         $promise->cancel();
                     }
                 }
@@ -252,7 +251,7 @@ class Queue implements \Countable
         }, function () use ($promises) {
             // cancel all pending promises on cancellation
             foreach (array_reverse($promises) as $promise) {
-                if ($promise instanceof CancellablePromiseInterface) {
+                if ($promise instanceof PromiseInterface && \method_exists($promise, 'cancel')) {
                     $promise->cancel();
                 }
             }
@@ -367,7 +366,7 @@ class Queue implements \Countable
 
         $deferred = new Deferred(function ($_, $reject) use (&$queue, $id, &$deferred) {
             // forward cancellation to pending operation if it is currently executing
-            if (isset($deferred->pending) && $deferred->pending instanceof CancellablePromiseInterface) {
+            if (isset($deferred->pending) && $deferred->pending instanceof PromiseInterface && \method_exists($deferred->pending, 'cancel')) {
                 $deferred->pending->cancel();
             }
             unset($deferred->pending);
