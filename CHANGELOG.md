@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.5.0 (2022-09-30)
+
+*   Feature: Forward compatibility with upcoming Promise v3.
+    (#33 by @clue)
+
+*   Update to use new reactphp/async package instead of clue/reactphp-block.
+    (#34 by @SimonFrings)
+
 ## 1.4.0 (2021-11-15)
 
 *   Feature: Support PHP 8.1, avoid deprecation warning concerning `\Countable::count(...)` return type.
