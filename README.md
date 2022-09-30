@@ -422,15 +422,13 @@ $promise = Queue::any(10, $jobs, array($browser, 'get'));
 #### Blocking
 
 As stated above, this library provides you a powerful, async API by default.
-If, however, you want to integrate this into your traditional, blocking
-environment, you may want to look into also using
-[clue/reactphp-block](https://github.com/clue/reactphp-block).
 
-The resulting blocking code that awaits a number of concurrent HTTP requests
-could look something like this:
+You can also integrate this into your traditional, blocking environment by using
+[reactphp/async](https://github.com/reactphp/async). This allows you to simply
+await async HTTP requests like this:
 
 ```php
-use Clue\React\Block;
+use function React\Async\await;
 
 $browser = new React\Http\Browser();
 
@@ -439,7 +437,7 @@ $promise = Queue::all(3, $urls, function ($url) use ($browser) {
 });
 
 try {
-    $responses = Block\await($promise, $loop);
+    $responses = await($promise);
     // responses successfully received
 } catch (Exception $e) {
     // an error occured while performing the requests
@@ -450,6 +448,8 @@ Similarly, you can also wrap this in a function to provide a simple API and hide
 all the async details from the outside:
 
 ```php
+use function React\Async\await; 
+
 /**
  * Concurrently downloads all the given URIs
  *
@@ -465,12 +465,13 @@ function download(array $uris)
         return $browser->get($uri);
     });
 
-    return Clue\React\Block\await($promise, $loop);
+    return await($promise);
 }
 ```
 
-Please refer to [clue/reactphp-block](https://github.com/clue/reactphp-block#readme)
-for more details.
+This is made possible thanks to fibers available in PHP 8.1+ and our
+compatibility API that also works on all supported PHP versions.
+Please refer to [reactphp/async](https://github.com/reactphp/async#readme) for more details.
 
 > Keep in mind that returning an array of response messages means that the whole
   response body has to be kept in memory.

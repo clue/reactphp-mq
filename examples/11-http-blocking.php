@@ -1,8 +1,5 @@
 <?php
 
-use Clue\React\Block;
-use React\EventLoop\Loop;
-
 require __DIR__ . '/../vendor/autoload.php';
 
 // list of all URLs you want to download
@@ -33,7 +30,7 @@ function download(array $urls)
         );
     });
 
-    return Block\await($promise, Loop::get());
+    return React\Async\await($promise);
 }
 
 $responses = download($urls);
