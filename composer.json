@@ -21,8 +21,8 @@
         "react/promise": "^3 || ^2.2.1 || ^1.2.1"
     },
     "require-dev": {
-        "clue/block-react": "^1.5",
         "phpunit/phpunit": "^9.3 || ^5.7 || ^4.8.35",
+        "react/async": "^4 || ^3 || ^2",
         "react/event-loop": "^1.2",
         "react/http": "^1.8"
     }
