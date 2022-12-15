@@ -435,7 +435,8 @@ class Queue implements \Countable
         // await this situation, invoke handler and await its resolution before invoking next queued job
         ++$this->pending;
 
-        $state = $this->state[spl_object_hash($deferred)];
+        $deferredHash = spl_object_hash($deferred);
+        $state = $this->state[$deferredHash];
         $promise = call_user_func_array($this->handler, $state->args);
         $state->pending = $promise;
         unset($state->args);
@@ -443,12 +444,12 @@ class Queue implements \Countable
         $that = $this;
         // invoke handler and await its resolution before invoking next queued job
         $this->await($promise)->then(
-            function ($result) use ($deferred, &$that) {
-                unset($that->state[spl_object_hash($deferred)]);
+            function ($result) use ($deferred, &$that, $deferredHash) {
+                unset($that->state[$deferredHash]);
                 $deferred->resolve($result);
             },
-            function ($e) use ($deferred, &$that) {
-                unset($that->state[spl_object_hash($deferred)]);
+            function ($e) use ($deferred, &$that, $deferredHash) {
+                unset($that->state[$deferredHash]);
                 $deferred->reject($e);
             }
         );
