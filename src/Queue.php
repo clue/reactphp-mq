@@ -27,7 +27,9 @@ class Queue implements \Countable
 
     private $pending = 0;
     private $queue = array();
-    private $state = array();
+
+    /** @internal Make this private when support for PHP 5.3 is dropped. */
+    public $state = array();
 
     /**
      * Concurrently process all given jobs through the given `$handler`.
