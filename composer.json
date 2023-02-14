@@ -10,20 +10,24 @@
             "email": "christian@clue.engineering"
         }
     ],
-    "autoload": {
-        "psr-4": { "Clue\\React\\Mq\\": "src/" }
-    },
-    "autoload-dev": {
-        "psr-4": { "Clue\\Tests\\React\\Mq\\": "tests/" }
-    },
     "require": {
         "php": ">=5.3",
         "react/promise": "^3 || ^2.2.1 || ^1.2.1"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.3 || ^5.7 || ^4.8.35",
+        "phpunit/phpunit": "^9.6 || ^5.7 || ^4.8.36",
         "react/async": "^4 || ^3 || ^2",
         "react/event-loop": "^1.2",
         "react/http": "^1.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "Clue\\React\\Mq\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Clue\\Tests\\React\\Mq\\": "tests/"
+        }
     }
 }
