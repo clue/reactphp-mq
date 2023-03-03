@@ -363,6 +363,7 @@ class Queue implements \Countable
         $queue[] = null;
         end($queue);
         $id = key($queue);
+        assert(is_int($id));
 
         $deferred = new Deferred(function ($_, $reject) use (&$queue, $id, &$deferred) {
             // forward cancellation to pending operation if it is currently executing
@@ -420,8 +421,8 @@ class Queue implements \Countable
             return;
         }
 
-        /* @var $deferred Deferred */
         $deferred = reset($this->queue);
+        assert($deferred instanceof Deferred);
         unset($this->queue[key($this->queue)]);
 
         // once number of pending jobs is below concurrency limit again:
