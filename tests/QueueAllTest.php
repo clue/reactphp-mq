@@ -118,6 +118,8 @@ class QueueAllTest extends TestCase
             return $promise;
         });
 
+        $promise->then(null, $this->expectCallableOnce()); // avoid reporting unhandled rejection
+
         $first->reject(new \RuntimeException());
 
         $this->assertEquals(3, $started);
