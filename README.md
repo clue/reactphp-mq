@@ -107,7 +107,7 @@ is reached, it will not start a new operation and instead queue this for future
 execution. Once one of the pending operations complete, it will pick the next
 job from the queue and execute this operation.
 
-The `new Queue(int $concurrency, ?int $limit, callable $handler)` call
+The `new Queue(int $concurrency, ?int $limit, callable(mixed):PromiseInterface<T> $handler)` call
 can be used to create a new queue instance.
 You can create any number of queues, for example when you want to apply
 different limits to different kinds of operations.
@@ -275,7 +275,7 @@ for more details.
 
 #### all()
 
-The static `all(int $concurrency, array $jobs, callable $handler): PromiseInterface<mixed[]>` method can be used to
+The static `all(int $concurrency, array<TKey,TIn> $jobs, callable(TIn):PromiseInterface<TOut> $handler): PromiseInterface<array<TKey,TOut>>` method can be used to
 concurrently process all given jobs through the given `$handler`.
 
 This is a convenience method which uses the `Queue` internally to
@@ -349,7 +349,7 @@ $promise = Queue::all(10, $jobs, array($browser, 'get'));
 
 #### any()
 
-The static `any(int $concurrency, array $jobs, callable $handler): PromiseInterface<mixed>` method can be used to
+The static `any(int $concurrency, array<TKey,TIn> $jobs, callable(TIn):Promise<TOut> $handler): PromiseInterface<TOut>` method can be used to
 concurrently process the given jobs through the given `$handler` and
 resolve with first resolution value.
 
