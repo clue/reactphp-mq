@@ -27,7 +27,10 @@ class Queue implements \Countable
     private $limit;
     private $handler;
 
+    /** @var int<0,max> */
     private $pending = 0;
+
+    /** @var array<int,\Closure():void> */
     private $queue = array();
 
     /**
@@ -373,24 +376,42 @@ class Queue implements \Countable
         $id = key($queue);
         assert(is_int($id));
 
-        $deferred = new Deferred(function ($_, $reject) use (&$queue, $id, &$deferred) {
-            // forward cancellation to pending operation if it is currently executing
-            if (isset($deferred->pending) && $deferred->pending instanceof PromiseInterface && \method_exists($deferred->pending, 'cancel')) {
-                $deferred->pending->cancel();
-            }
-            unset($deferred->pending);
+        /** @var ?PromiseInterface<T> $pending */
+        $pending = null;
 
-            if (isset($deferred->args)) {
+        $deferred = new Deferred(function ($_, $reject) use (&$queue, $id, &$pending) {
+            // forward cancellation to pending operation if it is currently executing
+            if ($pending instanceof PromiseInterface && \method_exists($pending, 'cancel')) {
+                $pending->cancel();
+            }
+            $pending = null;
+
+            if (isset($queue[$id])) {
                 // queued promise cancelled before its handler is invoked
                 // remove from queue and reject explicitly
-                unset($queue[$id], $deferred->args);
+                unset($queue[$id]);
                 $reject(new \RuntimeException('Cancelled queued job before processing started'));
             }
         });
 
         // queue job to process if number of pending jobs is below concurrency limit again
-        $deferred->args = func_get_args();
-        $queue[$id] = $deferred;
+        $handler = $this->handler; // PHP 5.4+
+        $args = func_get_args();
+        $that = $this; // PHP 5.4+
+        $queue[$id] = function () use ($handler, $args, $deferred, &$pending, $that) {
+            $pending = \call_user_func_array($handler, $args);
+
+            $that->await($pending)->then(
+                function ($result) use ($deferred, &$pending) {
+                    $pending = null;
+                    $deferred->resolve($result);
+                },
+                function ($e) use ($deferred, &$pending) {
+                    $pending = null;
+                    $deferred->reject($e);
+                }
+            );
+        };
 
         return $deferred->promise();
     }
@@ -407,7 +428,7 @@ class Queue implements \Countable
      */
     public function await(PromiseInterface $promise)
     {
-        $that = $this;
+        $that = $this; // PHP 5.4+
 
         return $promise->then(function ($result) use ($that) {
             $that->processQueue();
@@ -430,28 +451,15 @@ class Queue implements \Countable
             return;
         }
 
-        $deferred = reset($this->queue);
-        assert($deferred instanceof Deferred);
+        $next = reset($this->queue);
+        assert($next instanceof \Closure);
         unset($this->queue[key($this->queue)]);
 
         // once number of pending jobs is below concurrency limit again:
         // await this situation, invoke handler and await its resolution before invoking next queued job
         ++$this->pending;
 
-        $promise = call_user_func_array($this->handler, $deferred->args);
-        $deferred->pending = $promise;
-        unset($deferred->args);
-
         // invoke handler and await its resolution before invoking next queued job
-        $this->await($promise)->then(
-            function ($result) use ($deferred) {
-                unset($deferred->pending);
-                $deferred->resolve($result);
-            },
-            function ($e) use ($deferred) {
-                unset($deferred->pending);
-                $deferred->reject($e);
-            }
-        );
+        $next();
     }
 }
