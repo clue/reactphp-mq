@@ -18,6 +18,8 @@ use React\Promise\PromiseInterface;
  * is reached, it will not start a new operation and instead queue this for future
  * execution. Once one of the pending operations complete, it will pick the next
  * job from the queue and execute this operation.
+ *
+ * @template T
  */
 class Queue implements \Countable
 {
@@ -100,10 +102,13 @@ class Queue implements \Countable
      * > Keep in mind that returning an array of response messages means that
      *   the whole response body has to be kept in memory.
      *
-     * @param int      $concurrency concurrency soft limit
-     * @param array    $jobs
-     * @param callable $handler
-     * @return PromiseInterface Returns a Promise<mixed[]> which resolves with an array of all resolution values
+     * @template TKey
+     * @template TIn
+     * @template TOut
+     * @param int                                  $concurrency concurrency soft limit
+     * @param array<TKey,TIn>                      $jobs
+     * @param callable(TIn):PromiseInterface<TOut> $handler
+     * @return PromiseInterface<array<TKey,TOut>> Returns a Promise which resolves with an array of all resolution values
      *     or rejects when any of the operations reject.
      */
     public static function all($concurrency, array $jobs, $handler)
@@ -212,10 +217,13 @@ class Queue implements \Countable
      * $promise = Queue::any(10, $jobs, array($browser, 'get'));
      * ```
      *
-     * @param int      $concurrency concurrency soft limit
-     * @param array    $jobs
-     * @param callable $handler
-     * @return PromiseInterface Returns a Promise<mixed> which resolves with a single resolution value
+     * @template TKey
+     * @template TIn
+     * @template TOut
+     * @param int                                  $concurrency concurrency soft limit
+     * @param array<TKey,TIn>                      $jobs
+     * @param callable(TIn):PromiseInterface<TOut> $handler
+     * @return PromiseInterface<TOut> Returns a Promise which resolves with a single resolution value
      *     or rejects when all of the operations reject.
      */
     public static function any($concurrency, array $jobs, $handler)
@@ -307,9 +315,9 @@ class Queue implements \Countable
      * $q = new Queue(10, null, array($browser, 'get'));
      * ```
      *
-     * @param int      $concurrency concurrency soft limit
-     * @param int|null $limit       queue hard limit or NULL=unlimited
-     * @param callable $handler
+     * @param int                                    $concurrency concurrency soft limit
+     * @param int|null                               $limit       queue hard limit or NULL=unlimited
+     * @param callable(mixed):PromiseInterface<T> $handler
      * @throws \InvalidArgumentException
      */
     public function __construct($concurrency, $limit, $handler)
@@ -338,7 +346,7 @@ class Queue implements \Countable
      * completed. This means that this is handled entirely transparently and you do not
      * need to worry about this concurrency limit yourself.
      *
-     * @return \React\Promise\PromiseInterface
+     * @return PromiseInterface<T>
      */
     public function __invoke()
     {
@@ -395,6 +403,7 @@ class Queue implements \Countable
 
     /**
      * @internal
+     * @param PromiseInterface<T> $promise
      */
     public function await(PromiseInterface $promise)
     {
