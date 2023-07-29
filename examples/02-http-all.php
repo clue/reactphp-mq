@@ -29,7 +29,7 @@ $promise->then(
         }
     },
     function ($e) {
-        echo 'An error occured: ' . $e->getMessage() . PHP_EOL;
+        echo 'An error occurred: ' . $e->getMessage() . PHP_EOL;
     }
 );
 

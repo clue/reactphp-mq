@@ -441,7 +441,7 @@ try {
     $responses = await($promise);
     // responses successfully received
 } catch (Exception $e) {
-    // an error occured while performing the requests
+    // an error occurred while performing the requests
 }
 ```
 

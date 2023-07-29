@@ -20,7 +20,7 @@ class QueueAllTest extends TestCase
         Queue::all(1, array(), 'foobar')->then(null, $this->expectCallableOnce());
     }
 
-    public function testWillResolveWithtEmptyArrayWithoutInvokingHandlerWhenJobsAreEmpty()
+    public function testWillResolveWithEmptyArrayWithoutInvokingHandlerWhenJobsAreEmpty()
     {
         $promise = Queue::all(1, array(), $this->expectCallableNever());
 
