@@ -104,7 +104,7 @@ This means that you control how many operations can be executed concurrently.
 If you add a job to the queue and it still below the limit, it will be executed
 immediately. If you keep adding new jobs to the queue and its concurrency limit
 is reached, it will not start a new operation and instead queue this for future
-execution. Once one of the pending operations complete, it will pick the next
+execution. Once one of the pending operations is complete, it will pick the next
 job from the queue and execute this operation.
 
 The `new Queue(int $concurrency, ?int $limit, callable(mixed):PromiseInterface<T> $handler)` call
