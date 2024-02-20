@@ -10,7 +10,7 @@ built on top of [ReactPHP](https://reactphp.org/).
 Let's say you crawl a page and find that you need to send 100 HTTP requests to
 following pages which each takes `0.2s`. You can either send them all
 sequentially (taking around `20s`) or you can use
-[ReactPHP](https://reactphp.org) to concurrently request all your pages at the
+[ReactPHP](https://reactphp.org/) to concurrently request all your pages at the
 same time. This works perfectly fine for a small number of operations, but
 sending an excessive number of requests can either take up all resources on your
 side or may get you banned by the remote side as it sees an unreasonable number
@@ -84,12 +84,14 @@ $q = new Clue\React\Mq\Queue(3, null, function ($url) use ($browser) {
 foreach ($urls as $url) {
     $q($url)->then(function (Psr\Http\Message\ResponseInterface $response) use ($url) {
         echo $url . ': ' . $response->getBody()->getSize() . ' bytes' . PHP_EOL;
+    }, function (Exception $e) {
+        echo 'Error: ' . $e->getMessage() . PHP_EOL;
     });
 }
 
 ```
 
-See also the [examples](examples).
+See also the [examples](examples/).
 
 ## Usage
 
@@ -292,6 +294,8 @@ $promise = Queue::all(3, $urls, function ($url) use ($browser) {
 
 $promise->then(function (array $responses) {
     echo 'All ' . count($responses) . ' successful!' . PHP_EOL;
+}, function (Exception $e) {
+    echo 'Error: ' . $e->getMessage() . PHP_EOL;
 });
 ```
 
@@ -368,6 +372,8 @@ $promise = Queue::any(3, $urls, function ($url) use ($browser) {
 
 $promise->then(function (ResponseInterface $response) {
     echo 'First response: ' . $response->getBody() . PHP_EOL;
+}, function (Exception $e) {
+    echo 'Error: ' . $e->getMessage() . PHP_EOL;
 });
 ```
 
