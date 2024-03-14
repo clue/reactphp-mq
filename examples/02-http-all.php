@@ -28,8 +28,7 @@ $promise->then(
             echo $url . ' has ' . $response->getBody()->getSize() . ' bytes' . PHP_EOL;
         }
     },
-    function ($e) {
-        echo 'An error occurred: ' . $e->getMessage() . PHP_EOL;
+    function (Exception $e) {
+        echo 'Error: ' . $e->getMessage() . PHP_EOL;
     }
 );
-

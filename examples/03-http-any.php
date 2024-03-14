@@ -30,8 +30,7 @@ $promise->then(
     function ($url) {
         echo 'First successful URL is ' . $url . PHP_EOL;
     },
-    function ($e) {
-        echo 'An error occurred: ' . $e->getMessage() . PHP_EOL;
+    function (Exception $e) {
+        echo 'Error: ' . $e->getMessage() . PHP_EOL;
     }
 );
-

@@ -25,9 +25,8 @@ foreach ($urls as $url) {
         function (Psr\Http\Message\ResponseInterface $response) use ($url) {
             echo $url . ' has ' . $response->getBody()->getSize() . ' bytes' . PHP_EOL;
         },
-        function (Exception $e) use ($url) {
-            echo $url . ' failed: ' . $e->getMessage() . PHP_EOL;
+        function (Exception $e) {
+            echo 'Error: ' . $e->getMessage() . PHP_EOL;
         }
     );
 }
-
