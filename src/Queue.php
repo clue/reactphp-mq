@@ -318,9 +318,14 @@ class Queue implements \Countable
      * $q = new Queue(10, null, array($browser, 'get'));
      * ```
      *
-     * @param int                                    $concurrency concurrency soft limit
-     * @param int|null                               $limit       queue hard limit or NULL=unlimited
-     * @param callable(mixed):PromiseInterface<T> $handler
+     * @template A1 (any number of function arguments, see https://github.com/phpstan/phpstan/issues/8214)
+     * @template A2
+     * @template A3
+     * @template A4
+     * @template A5
+     * @param int $concurrency concurrency soft limit
+     * @param int|null $limit queue hard limit or NULL=unlimited
+     * @param callable(A1,A2,A3,A4,A5):PromiseInterface<T> $handler
      * @throws \InvalidArgumentException
      */
     public function __construct($concurrency, $limit, $handler)
