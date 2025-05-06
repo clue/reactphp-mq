@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.7.0 (2025-05-23)
+
+*   Feature: Improve template types to support typed handler arguments.
+    (#51 by @clue)
+
+*   Improve documentation and examples.
+    (#47 by @yadaiio and #44 @szepeviktor)
+
+*   Improve test suite, run tests on PHP 8.3 + PHP 8.4 and update test environment.
+    (#46 by @yadaiio and #50 by @PaulRotmann)
+
 ## 1.6.0 (2023-07-28)
 
 *   Feature: Improve Promise v3 support and use template types.
